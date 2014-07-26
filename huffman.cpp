@@ -114,8 +114,7 @@ long encode(word_t* input, long length, char*& output, Node* tree)
         for (int i = 0; i < word.count_bits; ++i)
         {
             // write a single bit
-            output[byte_pos] |= word.bits[i] << (7-bit_pos);
-            ++bit_pos;
+            output[byte_pos] |= word.bits[i] << (7-bit_pos++);
 
             if (bit_pos == 8)
             {
@@ -128,11 +127,45 @@ long encode(word_t* input, long length, char*& output, Node* tree)
     return byte_pos + 1;
 }
 
+void decode(char* input, long length, word_t*& output, Node* tree)
+{
+    output = new word_t[length];
+
+    if (tree->is_terminal)
+        fill_n(output, length, tree->value);    // only one value
+
+    long byte_pos = 0, bit_pos = 0;
+    for (long l = 0; l < length; ++l)
+    {
+        Node* node = tree;
+        while (!node->is_terminal)
+        {
+            char direction = input[byte_pos] & (1 << (7-bit_pos++));
+
+            if (bit_pos == 8)
+            {
+                bit_pos = 0;
+                byte_pos++;
+            }
+
+            if (!direction)
+                node = node->left;      // left
+            else
+                node = node->right;     // right
+        }
+
+        output[l] = node->value;
+    }
+}
+
 int main()
 {
-    short arr[10] = {29, 29, 29, 129, 529, 4542, 229, 629, 129, 29};
+    short arr[10] = {29, 29, 29, 29, 29, 29, 299, 29, 29, 29};
     Node* tree = generate_tree(arr, 10);
     char* output;
     long new_size = encode(arr, 10, output, tree);
-    cout << new_size << endl;
+
+    short* decoded;
+    decode(output, 10, decoded, tree);
+    cout << decoded[6];
 }
