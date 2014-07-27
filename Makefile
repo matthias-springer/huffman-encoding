@@ -6,7 +6,7 @@ all: benchmark
 huffman.o: huffman.cpp huffman.h
 	$(CC) $(CFLAGS) huffman.cpp
 
-benchmark.o: benchmark.cpp
+benchmark.o: benchmark.cpp huffman.h
 	$(CC) $(CFLAGS) benchmark.cpp
 
 benchmark: benchmark.o huffman.o

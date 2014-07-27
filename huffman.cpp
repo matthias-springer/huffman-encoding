@@ -1,4 +1,5 @@
 #include <stack>
+#include <deque>
 #include <queue>
 #include <unordered_map>
 #include "huffman.h"
@@ -14,13 +15,16 @@ class Node
         long counter;
         bool is_terminal;
 
-        bool operator<(const Node &other) const
-        {
-            return this->counter < other.counter;
-        }
-
         Node(Node* _left, Node* _right, long _counter, bool _is_terminal, long _value) :
             left(_left), right(_right), value(_value), counter(_counter), is_terminal(_is_terminal) {}
+};
+
+struct node_comparator
+{
+    bool operator()(const Node* a, const Node* b) const
+    {
+        return a->counter > b->counter;
+    }
 };
 
 Node* generate_tree(word_t* input, long length)
@@ -30,7 +34,7 @@ Node* generate_tree(word_t* input, long length)
     for (long l = 0; l < length; ++l)
         frequencies[input[l]]++;
 
-    priority_queue<Node*> subtrees;
+    priority_queue<Node*, deque<Node*>, node_comparator> subtrees;
     for (auto it = frequencies.begin(); it != frequencies.end(); ++it)
         subtrees.push(new Node(NULL, NULL, it->second, true, it->first));
 
@@ -108,6 +112,7 @@ long encode(word_t* input, long length, char*& output, Node* tree)
     for (long l = 0; l < length; ++l)
     {
         struct inverse_map_builder_state word = inverse_mapping[input[l]];
+
         for (int i = 0; i < word.count_bits; ++i)
         {
             // write a single bit

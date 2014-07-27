@@ -3,15 +3,22 @@
 
 using namespace std;
 
+// change word size in huffman.h
+
 int main()
 {
-    word_t arr[10] = {1,2,5,1,3,11,3,1,34,2};
-    Node* tree = generate_tree(arr, 10);
+    int size = 500000;
+    word_t* input = new word_t[size];
     char* output;
-    long new_size = encode(arr, 10, output, tree);
-    word_t* decoded;
-    decode(output, 10, decoded, tree);
-    cout << decoded[6];
+
+    for (int i = 0; i < size; ++i)
+        input[i] = rand() % 9000;
+
+    Node* tree = generate_tree(input, size);
+    long compressed_size = encode(input, size, output, tree);
+
+    cout << "Compression: " << sizeof(word_t)*size << " -> " << compressed_size << endl;
+    cout << "Compression rate: " << compressed_size*1. / (sizeof(word_t)*size) << "%" << endl;
 
     return 0;
 }
