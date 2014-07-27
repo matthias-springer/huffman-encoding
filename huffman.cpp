@@ -1,10 +1,7 @@
-#include <stdio.h>
-#include <iostream>
 #include <stack>
 #include <queue>
 #include <unordered_map>
-
-#define word_t short
+#include "huffman.h"
 
 using namespace std;
 
@@ -158,14 +155,3 @@ void decode(char* input, long length, word_t*& output, Node* tree)
     }
 }
 
-int main()
-{
-    short arr[10] = {29, 29, 29, 29, 29, 29, 299, 29, 29, 29};
-    Node* tree = generate_tree(arr, 10);
-    char* output;
-    long new_size = encode(arr, 10, output, tree);
-
-    short* decoded;
-    decode(output, 10, decoded, tree);
-    cout << decoded[6];
-}
