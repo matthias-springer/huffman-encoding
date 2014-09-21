@@ -13,7 +13,7 @@ class Node
     public:
         Node* left;
         Node* right;
-        word_t value;       // word or jump value
+        word_t value;
         long counter;
         int level;
         bool is_terminal;
@@ -141,14 +141,12 @@ struct inverse_map_builder_state {
 };
 
 template <typename word_t>
-long encode(word_t* input, long length, char*& output, Node<word_t>* tree)
+using encoding_dict = unordered_map<word_t, struct inverse_map_builder_state<word_t>>;
+
+template <typename word_t>
+void build_inverse_mapping(Node<word_t>* tree, encoding_dict<word_t>& encoding_dict)
 {
-    output = new char[length * sizeof(word_t) / sizeof(char)]();
-
-    // build inverse map
     struct inverse_map_builder_state<word_t> state(tree, NULL, 0);
-
-    unordered_map<word_t, struct inverse_map_builder_state<word_t>> inverse_mapping;
     stack<struct inverse_map_builder_state<word_t>> traversal_state;
     traversal_state.push(state);
 
@@ -162,7 +160,7 @@ long encode(word_t* input, long length, char*& output, Node<word_t>* tree)
             // input has only one word (possibly repeatedly)
             state.bits = new char[1] {0};
             state.count_bits = 1;
-            inverse_mapping[state.node->value] = state;
+            encoding_dict[state.node->value] = state;
             break;
         }
 
@@ -172,7 +170,7 @@ long encode(word_t* input, long length, char*& output, Node<word_t>* tree)
             memcpy(left.bits, state.bits, state.count_bits);
         left.bits[state.count_bits] = 0;
         if (left.node->is_terminal)
-            inverse_mapping[left.node->value] = left;
+            encoding_dict[left.node->value] = left;
         else
             traversal_state.push(left);
 
@@ -182,16 +180,23 @@ long encode(word_t* input, long length, char*& output, Node<word_t>* tree)
             memcpy(right.bits, state.bits, state.count_bits);
         right.bits[state.count_bits] = 1;
         if (right.node->is_terminal)
-            inverse_mapping[right.node->value] = right;
+            encoding_dict[right.node->value] = right;
         else
             traversal_state.push(right);
-    }
 
-    // encode
+        delete state.bits;
+    }
+}
+
+template <typename word_t>
+long encode(word_t* input, long length, char*& output, encoding_dict<word_t>& encoding_dict)
+{
+    output = new char[length * sizeof(word_t) / sizeof(char)]();
+
     long byte_pos = 0, bit_pos = 0;
     for (long l = 0; l < length; ++l)
     {
-        struct inverse_map_builder_state<word_t> word = inverse_mapping[input[l]];
+        auto word = encoding_dict[input[l]];
 
         for (int i = 0; i < word.count_bits; ++i)
         {
