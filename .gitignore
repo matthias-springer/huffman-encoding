@@ -23,3 +23,5 @@
 *.hex
 benchmark
 
+# Swap files
+*.swp
