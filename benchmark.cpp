@@ -3,9 +3,6 @@
 
 using namespace std;
 
-//template void decode<unsigned short>(char* input, long length, word_t*& output, word_t* huffman_array, bool* terminator_array);
-
-// change word size in huffman.h
 int main()
 {
     int size = 500000;
