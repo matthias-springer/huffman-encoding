@@ -223,8 +223,10 @@ void decode(char* input, long length, word_t*& output, word_t* huffman_array, bo
 
     while (true)
     {
+        unsigned char byte = input[byte_pos];
+        
         huffman_pos += huffman_array[huffman_pos];
-        if (input[byte_pos] & (unsigned char) 128) huffman_pos++;
+        huffman_pos += (byte & (unsigned char) 128) >> (unsigned char) 7;
         if (terminator_array[huffman_pos]) {
             output[next++] = huffman_array[huffman_pos];
             huffman_pos = 0;
@@ -232,7 +234,7 @@ void decode(char* input, long length, word_t*& output, word_t* huffman_array, bo
         }
 
         huffman_pos += huffman_array[huffman_pos];
-        if (input[byte_pos] & (unsigned char) 64) huffman_pos++;
+        huffman_pos += (byte & (unsigned char) 64) >> (unsigned char) 6;
         if (terminator_array[huffman_pos]) {
             output[next++] = huffman_array[huffman_pos];
             huffman_pos = 0;
@@ -240,7 +242,7 @@ void decode(char* input, long length, word_t*& output, word_t* huffman_array, bo
         }
 
         huffman_pos += huffman_array[huffman_pos];
-        if (input[byte_pos] & (unsigned char) 32) huffman_pos++;
+        huffman_pos += (byte & (unsigned char) 32) >> (unsigned char) 5;
         if (terminator_array[huffman_pos]) {
             output[next++] = huffman_array[huffman_pos];
             huffman_pos = 0;
@@ -248,7 +250,7 @@ void decode(char* input, long length, word_t*& output, word_t* huffman_array, bo
         }
 
         huffman_pos += huffman_array[huffman_pos];
-        if (input[byte_pos] & (unsigned char) 16) huffman_pos++;
+        huffman_pos += (byte & (unsigned char) 16) >> (unsigned char) 4;
         if (terminator_array[huffman_pos]) {
             output[next++] = huffman_array[huffman_pos];
             huffman_pos = 0;
@@ -256,7 +258,7 @@ void decode(char* input, long length, word_t*& output, word_t* huffman_array, bo
         }
 
         huffman_pos += huffman_array[huffman_pos];
-        if (input[byte_pos] & (unsigned char) 8) huffman_pos++;
+        huffman_pos += (byte & (unsigned char) 8) >> (unsigned char) 3;
         if (terminator_array[huffman_pos]) {
             output[next++] = huffman_array[huffman_pos];
             huffman_pos = 0;
@@ -264,7 +266,7 @@ void decode(char* input, long length, word_t*& output, word_t* huffman_array, bo
         }
 
         huffman_pos += huffman_array[huffman_pos];
-        if (input[byte_pos] & (unsigned char) 4) huffman_pos++;
+        huffman_pos += (byte & (unsigned char) 4) >> (unsigned char) 2;
         if (terminator_array[huffman_pos]) {
             output[next++] = huffman_array[huffman_pos];
             huffman_pos = 0;
@@ -272,7 +274,7 @@ void decode(char* input, long length, word_t*& output, word_t* huffman_array, bo
         }
 
         huffman_pos += huffman_array[huffman_pos];
-        if (input[byte_pos] & (unsigned char) 2) huffman_pos++;
+        huffman_pos += (byte & (unsigned char) 2) >> (unsigned char) 1;
         if (terminator_array[huffman_pos]) {
             output[next++] = huffman_array[huffman_pos];
             huffman_pos = 0;
@@ -280,7 +282,7 @@ void decode(char* input, long length, word_t*& output, word_t* huffman_array, bo
         }
 
         huffman_pos += huffman_array[huffman_pos];
-        if (input[byte_pos] & (unsigned char) 1) huffman_pos++;
+        huffman_pos += byte & (unsigned char) 1;
         if (terminator_array[huffman_pos]) {
             output[next++] = huffman_array[huffman_pos];
             huffman_pos = 0;
