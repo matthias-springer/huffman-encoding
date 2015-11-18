@@ -2,6 +2,7 @@
 #include <deque>
 #include <queue>
 #include <unordered_map>
+#include <string.h>
 
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
@@ -218,32 +219,75 @@ template <typename word_t>
 void decode(char* input, long length, word_t*& output, word_t* huffman_array, bool* terminator_array)
 {
     output = new word_t[length];
-    long byte_pos = 0, bit_pos = 0, next = 0;
+    long byte_pos = 0, huffman_pos = 0, next = 0;
 
-    for (long l = 0; l < length; ++l)
+    while (true)
     {
-        long huffman_pos = 0;
-
-        while (!terminator_array[huffman_pos])
-        {
-            char direction = input[byte_pos] & (1 << (7-bit_pos++));
-
-            if (bit_pos == 8)
-            {
-                 bit_pos = 0;
-                 byte_pos++;
-            }
-        
-            huffman_pos += huffman_array[huffman_pos];
-
-            if (direction)
-            {
-                // right
-                huffman_pos++;
-            }
+        huffman_pos += huffman_array[huffman_pos];
+        if (input[byte_pos] & (unsigned char) 128) huffman_pos++;
+        if (terminator_array[huffman_pos]) {
+            output[next++] = huffman_array[huffman_pos];
+            huffman_pos = 0;
+            if (next == length) break;
         }
 
-        output[next++] = huffman_array[huffman_pos];
+        huffman_pos += huffman_array[huffman_pos];
+        if (input[byte_pos] & (unsigned char) 64) huffman_pos++;
+        if (terminator_array[huffman_pos]) {
+            output[next++] = huffman_array[huffman_pos];
+            huffman_pos = 0;
+            if (next == length) break;
+        }
+
+        huffman_pos += huffman_array[huffman_pos];
+        if (input[byte_pos] & (unsigned char) 32) huffman_pos++;
+        if (terminator_array[huffman_pos]) {
+            output[next++] = huffman_array[huffman_pos];
+            huffman_pos = 0;
+            if (next == length) break;
+        }
+
+        huffman_pos += huffman_array[huffman_pos];
+        if (input[byte_pos] & (unsigned char) 16) huffman_pos++;
+        if (terminator_array[huffman_pos]) {
+            output[next++] = huffman_array[huffman_pos];
+            huffman_pos = 0;
+            if (next == length) break;
+        }
+
+        huffman_pos += huffman_array[huffman_pos];
+        if (input[byte_pos] & (unsigned char) 8) huffman_pos++;
+        if (terminator_array[huffman_pos]) {
+            output[next++] = huffman_array[huffman_pos];
+            huffman_pos = 0;
+            if (next == length) break;
+        }
+
+        huffman_pos += huffman_array[huffman_pos];
+        if (input[byte_pos] & (unsigned char) 4) huffman_pos++;
+        if (terminator_array[huffman_pos]) {
+            output[next++] = huffman_array[huffman_pos];
+            huffman_pos = 0;
+            if (next == length) break;
+        }
+
+        huffman_pos += huffman_array[huffman_pos];
+        if (input[byte_pos] & (unsigned char) 2) huffman_pos++;
+        if (terminator_array[huffman_pos]) {
+            output[next++] = huffman_array[huffman_pos];
+            huffman_pos = 0;
+            if (next == length) break;
+        }
+
+        huffman_pos += huffman_array[huffman_pos];
+        if (input[byte_pos] & (unsigned char) 1) huffman_pos++;
+        if (terminator_array[huffman_pos]) {
+            output[next++] = huffman_array[huffman_pos];
+            huffman_pos = 0;
+            if (next == length) break;
+        }
+
+        byte_pos++;
     }
 }
 

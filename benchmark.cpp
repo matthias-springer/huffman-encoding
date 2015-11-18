@@ -5,10 +5,23 @@ using namespace std;
 
 #define word_t unsigned long
 
+#include <sys/time.h>
+#include <sys/resource.h>
+
+// source: http://stackoverflow.com/questions/16764276/measuring-time-in-millisecond-precision
+double get_process_time() {
+    struct rusage usage;
+    if( 0 == getrusage(RUSAGE_SELF, &usage) ) {
+        return (double)(usage.ru_utime.tv_sec + usage.ru_stime.tv_sec) +
+               (double)(usage.ru_utime.tv_usec + usage.ru_stime.tv_usec) / 1.0e6;
+    }
+    return 0;
+}
+
 int main()
 {
     // generate random input data
-    int size = 500000;
+    int size = 5000000;
     word_t* input = new word_t[size];
 
     for (int i = 0; i < size; ++i)
@@ -32,7 +45,10 @@ int main()
     cout << "Compression rate: " << compressed_size*100. / (sizeof(word_t)*size) << "%" << endl;
 
     word_t* decompressed;
+    double t_begin = get_process_time();
     decode(compressed, size, decompressed, huffman_array, terminator_array);
+    double t_end = get_process_time();
+    cout << "Time: " << t_end - t_begin << " milliseconds" << endl;
 
     bool self_test_success = true;
     for (int i = 0; i < size; ++i)
